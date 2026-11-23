@@ -1,68 +1,200 @@
-Food Delivery Analysis
+# Food Delivery Analysis
 
-Project Description
+## 1. Project Description
 This project performs Exploratory Data Analysis (EDA) on food delivery data using Python. It analyses food categories, food items, order amounts, delivery times, and order status to understand customer ordering patterns.
 
-Dataset Details
-- **Dataset:** Food Delivery Dataset
-- **File:** `food_delivery_data.csv`
-- **Total Records:** 100
-- **Total Columns:** 9
+## 2. Tools and Technologies
+- Python
+- Google Colab
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
 
-Dataset Attributes
+## 3. Dataset Details
+- Dataset Name: Food Delivery Dataset
+- File Name: `food_delivery_data.csv`
+- Total Records: 100
+- Total Columns: 9
+
+### Dataset Attributes
 
 | Column | Description |
 |---|---|
-| Order_ID | Unique order ID |
-| Customer_ID | Customer ID |
+| Order_ID | Unique order identifier |
+| Customer_ID | Customer identifier |
 | Food_Category | Category of food |
 | Food_Item | Name of food item |
 | Order_Date | Date of order |
 | Order_Time | Time of order |
-| Order_Amount | Amount of order |
+| Order_Amount | Order amount |
 | Delivery_Time_Minutes | Delivery duration |
 | Order_Status | Delivered or Cancelled |
 
-Libraries Used
-- Pandas – Data manipulation
-- NumPy – Numerical operations
-- Matplotlib – Data visualisation
-- Seaborn – Statistical visualisation
+## 4. Python Code and Implementation
 
-Code and Analysis
+### 4.1 Importing Libraries
 
-1. Data Loading
-Loads the CSV dataset and displays the first five records and dataset dimensions.
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
 
-2. Data Exploration
-Uses `info()`, `describe()`, and `isnull().sum()` to understand the dataset structure, statistics, and missing values.
+**Purpose:** Imports the libraries required for data manipulation, numerical calculations, and visualisation.
 
-3. Data Cleaning
-Removes duplicate and missing records, cleans column names, and converts the order date into datetime format.
+### 4.2 Loading the Dataset
 
-4. Food Category Analysis
-Uses `value_counts()` to identify the number of orders in each food category.
+```python
+data = pd.read_csv('/content/food_delivery_data.csv')
 
-5. Food Item Analysis
-Analyses the number of orders for individual food items.
+print(data.head())
+print(data.shape)
+```
 
-6. Average Order Amount
-Calculates the average amount spent on orders.
+**Purpose:** Loads the CSV dataset and displays the first five records and dataset dimensions.
 
-7. Delivery Time Analysis
-Calculates the average delivery time in minutes.
+**Output:** 100 rows and 9 columns.
 
-8. Order Status Analysis
-Counts delivered and cancelled orders.
+### 4.3 Exploring the Dataset
 
-Visualisations
+```python
+print(data.info())
+print(data.describe())
+print(data.isnull().sum())
+```
 
-1. **Bar Chart:** Compares the number of orders across food categories.
-2. **Pie Chart:** Displays food category distribution.
-3. **Histogram:** Shows the distribution of delivery times.
-4. **Box Plot:** Displays the distribution of order amounts.
+**Purpose:** Displays dataset information, statistical summary, and missing values.
 
-Results
+**Output:** No missing values were found in the dataset.
+
+### 4.4 Data Cleaning
+
+```python
+data = data.drop_duplicates()
+
+data = data.dropna()
+
+data.columns = data.columns.str.strip()
+
+data['Order_Date'] = pd.to_datetime(data['Order_Date'])
+
+print(data.head())
+```
+
+**Purpose:** Removes duplicate and missing records, cleans column names, and converts the order date into datetime format.
+
+### 4.5 Food Category Analysis
+
+```python
+print(data['Food_Category'].value_counts())
+```
+
+**Purpose:** Counts the number of orders in each food category.
+
+### 4.6 Food Item Analysis
+
+```python
+print(data['Food_Item'].value_counts())
+```
+
+**Purpose:** Finds the number of orders for each individual food item.
+
+### 4.7 Average Order Amount
+
+```python
+print(data['Order_Amount'].mean())
+```
+
+**Output:** 386.81
+
+**Purpose:** Calculates the average order amount.
+
+### 4.8 Average Delivery Time
+
+```python
+print(data['Delivery_Time_Minutes'].mean())
+```
+
+**Output:** 41.07 minutes
+
+**Purpose:** Calculates the average delivery time.
+
+### 4.9 Order Status Analysis
+
+```python
+print(data['Order_Status'].value_counts())
+```
+
+**Output:**
+- Delivered: 76
+- Cancelled: 24
+
+**Purpose:** Counts delivered and cancelled orders.
+
+## 5. Data Visualisation
+
+### 5.1 Food Category Bar Chart
+
+```python
+data['Food_Category'].value_counts().plot(kind='bar')
+
+plt.title('Food Category Ordering Analysis')
+plt.xlabel('Food Category')
+plt.ylabel('Number of Orders')
+
+plt.show()
+```
+
+**Purpose:** Compares the number of orders in each food category.
+
+### 5.2 Food Category Pie Chart
+
+```python
+data['Food_Category'].value_counts().plot(
+    kind='pie',
+    autopct='%1.1f%%'
+)
+
+plt.title('Food Category Distribution')
+plt.ylabel('')
+
+plt.show()
+```
+
+**Purpose:** Displays the percentage distribution of food categories.
+
+### 5.3 Delivery Time Histogram
+
+```python
+plt.hist(data['Delivery_Time_Minutes'], bins=10)
+
+plt.title('Food Delivery Time Distribution')
+plt.xlabel('Delivery Time in Minutes')
+plt.ylabel('Number of Orders')
+
+plt.show()
+```
+
+**Purpose:** Shows the distribution of food delivery times.
+
+### 5.4 Order Amount Box Plot
+
+```python
+sns.boxplot(x=data['Order_Amount'])
+
+plt.title('Food Order Amount Box Plot')
+plt.xlabel('Order Amount (Rs)')
+
+plt.show()
+```
+
+**Purpose:** Displays the distribution and spread of order amounts.
+
+## 6. Results and Observations
+
+### Summary of Results
 
 | Analysis | Result |
 |---|---:|
@@ -72,9 +204,9 @@ Results
 | Delivered Orders | 76 |
 | Cancelled Orders | 24 |
 
-Food Category Results
+### Food Category Results
 
-| Category | Orders |
+| Food Category | Number of Orders |
 |---|---:|
 | Burger | 24 |
 | Desserts | 18 |
@@ -83,27 +215,29 @@ Food Category Results
 | Pizza | 14 |
 | South Indian | 12 |
 
-Observations
-- Burger is the most ordered food category.
+### Observations
+- Burger is the most frequently ordered food category.
 - South Indian has the lowest number of orders.
 - Average order amount is ₹386.81.
 - Average delivery time is 41.07 minutes.
-- 76 orders were delivered and 24 were cancelled.
+- 76 orders were delivered and 24 orders were cancelled.
 
-How to Run
+## 7. How to Run the Project
+
 1. Open Google Colab.
 2. Upload `Food_delivery_analysis.ipynb`.
 3. Upload `food_delivery_data.csv`.
 4. Run the notebook cells in sequence.
-5. View the outputs and visualisations.
+5. View the analysis results and charts.
 
-Installation
+### Required Libraries
 
 ```bash
 pip install pandas numpy matplotlib seaborn
 ```
-Platform Used
+
+## 8. Platform Used
 Google Colab
 
-Conclusion
-This project helps understand food delivery patterns by analysing food categories, order amounts, delivery times, and order status through Python-based data analysis and visualisation.
+## 9. Conclusion
+This project analyses food delivery data to understand customer ordering patterns, popular food categories, average order amounts, delivery times, and order status using Python and data visualisation.
