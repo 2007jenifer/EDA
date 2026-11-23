@@ -1,9 +1,9 @@
-Food Delivery Analysis
+# Rainfall Pattern Analysis
 
-1. Project Description
-This project performs Exploratory Data Analysis (EDA) on food delivery data using Python. It analyses food categories, food items, order amounts, delivery times, and order status to understand customer ordering patterns.
+## 1. Project Description
+This project performs Exploratory Data Analysis (EDA) on rainfall data from Salem, Erode, and Coimbatore. It analyses rainfall, temperature, and humidity to understand daily, monthly, and region-wise rainfall patterns.
 
-2. Tools and Technologies
+## 2. Tools and Technologies
 - Python
 - Google Colab
 - Pandas
@@ -11,29 +11,26 @@ This project performs Exploratory Data Analysis (EDA) on food delivery data usin
 - Matplotlib
 - Seaborn
 
-3. Dataset Details
-- Dataset Name: Food Delivery Dataset
-- File Name: `food_delivery_data.csv`
-- Total Records: 100
-- Total Columns: 9
+## 3. Dataset Details
+- Dataset Name: Rainfall Dataset
+- File Name: `rainfall_data.csv`
+- Total Records: 540
+- Total Columns: 5
+- Regions: Salem, Erode, Coimbatore
 
-Dataset Attributes
+### Dataset Attributes
 
 | Column | Description |
 |---|---|
-| Order_ID | Unique order identifier |
-| Customer_ID | Customer identifier |
-| Food_Category | Category of food |
-| Food_Item | Name of food item |
-| Order_Date | Date of order |
-| Order_Time | Time of order |
-| Order_Amount | Order amount |
-| Delivery_Time_Minutes | Delivery duration |
-| Order_Status | Delivered or Cancelled |
+| Date | Date of weather record |
+| Region | Region name |
+| Rainfall_mm | Rainfall in millimetres |
+| Temperature_C | Temperature in Celsius |
+| Humidity_Percent | Humidity percentage |
 
-4. Python Code and Implementation
+## 4. Python Code and Implementation
 
-4.1 Importing Libraries
+### 4.1 Importing Libraries
 
 ```python
 import pandas as pd
@@ -44,24 +41,27 @@ import seaborn as sns
 
 **Purpose:** Imports the libraries required for data manipulation, numerical calculations, and visualisation.
 
-4.2 Loading the Dataset
+### 4.2 Loading the Dataset
 
 ```python
-data = pd.read_csv('/content/food_delivery_data.csv')
+data = pd.read_csv('/content/rainfall_data.csv')
 
 print(data.head())
+
 print(data.shape)
 ```
 
-**Purpose:** Loads the CSV dataset and displays the first five records and dataset dimensions.
+**Purpose:** Loads the rainfall dataset and displays the first five records and dataset dimensions.
 
-**Output:** 100 rows and 9 columns.
+**Output:** 540 rows and 5 columns.
 
-4.3 Exploring the Dataset
+### 4.3 Exploring the Dataset
 
 ```python
 print(data.info())
+
 print(data.describe())
+
 print(data.isnull().sum())
 ```
 
@@ -69,175 +69,220 @@ print(data.isnull().sum())
 
 **Output:** No missing values were found in the dataset.
 
-4.4 Data Cleaning
+### 4.4 Data Cleaning
 
 ```python
 data = data.drop_duplicates()
 
 data = data.dropna()
 
-data.columns = data.columns.str.strip()
-
-data['Order_Date'] = pd.to_datetime(data['Order_Date'])
+data['Date'] = pd.to_datetime(data['Date'])
 
 print(data.head())
 ```
 
-**Purpose:** Removes duplicate and missing records, cleans column names, and converts the order date into datetime format.
+**Purpose:** Removes duplicate and missing records and converts the date column into datetime format.
 
-4.5 Food Category Analysis
+### 4.5 Extracting Month and Year
 
 ```python
-print(data['Food_Category'].value_counts())
+data['Month'] = data['Date'].dt.month
+
+data['Year'] = data['Date'].dt.year
 ```
 
-**Purpose:** Counts the number of orders in each food category.
+**Purpose:** Extracts month and year information from the date column for time-based analysis.
 
-4.6 Food Item Analysis
+### 4.6 Correlation Analysis
 
 ```python
-print(data['Food_Item'].value_counts())
+print(data[['Rainfall_mm',
+            'Temperature_C',
+            'Humidity_Percent']].corr())
 ```
 
-**Purpose:** Finds the number of orders for each individual food item.
+**Purpose:** Calculates the correlation between rainfall, temperature, and humidity.
 
-4.7 Average Order Amount
+### 4.7 Daily Rainfall Analysis
 
 ```python
-print(data['Order_Amount'].mean())
+daily_rainfall = data.groupby('Date')['Rainfall_mm'].mean()
+
+print(daily_rainfall.head())
 ```
 
-**Output:** 386.81
+**Purpose:** Calculates the average rainfall for each date.
 
-**Purpose:** Calculates the average order amount.
-
-4.8 Average Delivery Time
+### 4.8 Monthly Rainfall Analysis
 
 ```python
-print(data['Delivery_Time_Minutes'].mean())
+monthly_rainfall = data.groupby('Month')['Rainfall_mm'].mean()
+
+print(monthly_rainfall)
 ```
 
-**Output:** 41.07 minutes
+**Purpose:** Calculates the average rainfall for each month.
 
-**Purpose:** Calculates the average delivery time.
-
-4.9 Order Status Analysis
+### 4.9 Region-wise Rainfall Analysis
 
 ```python
-print(data['Order_Status'].value_counts())
+region_rainfall = data.groupby('Region')['Rainfall_mm'].mean()
+
+print(region_rainfall)
 ```
 
-**Output:**
-- Delivered: 76
-- Cancelled: 24
+**Purpose:** Calculates and compares average rainfall across Salem, Erode, and Coimbatore.
 
-**Purpose:** Counts delivered and cancelled orders.
+## 5. Data Visualisation
 
- 5. Data Visualisation
-
-5.1 Food Category Bar Chart
+### 5.1 Rainfall vs Temperature
 
 ```python
-data['Food_Category'].value_counts().plot(kind='bar')
-
-plt.title('Food Category Ordering Analysis')
-plt.xlabel('Food Category')
-plt.ylabel('Number of Orders')
-
-plt.show()
-```
-
-**Purpose:** Compares the number of orders in each food category.
-
-5.2 Food Category Pie Chart
-
-```python
-data['Food_Category'].value_counts().plot(
-    kind='pie',
-    autopct='%1.1f%%'
+sns.scatterplot(
+    data=data,
+    x='Temperature_C',
+    y='Rainfall_mm'
 )
 
-plt.title('Food Category Distribution')
-plt.ylabel('')
+plt.title('Rainfall vs Temperature')
+plt.xlabel('Temperature (C)')
+plt.ylabel('Rainfall (mm)')
 
 plt.show()
 ```
 
-**Purpose:** Displays the percentage distribution of food categories.
+**Purpose:** Analyses the relationship between temperature and rainfall.
 
-5.3 Delivery Time Histogram
+### 5.2 Rainfall vs Humidity
 
 ```python
-plt.hist(data['Delivery_Time_Minutes'], bins=10)
+sns.scatterplot(
+    data=data,
+    x='Humidity_Percent',
+    y='Rainfall_mm'
+)
 
-plt.title('Food Delivery Time Distribution')
-plt.xlabel('Delivery Time in Minutes')
-plt.ylabel('Number of Orders')
+plt.title('Rainfall vs Humidity')
+plt.xlabel('Humidity (%)')
+plt.ylabel('Rainfall (mm)')
 
 plt.show()
 ```
 
-**Purpose:** Shows the distribution of food delivery times.
+**Purpose:** Analyses the relationship between humidity and rainfall.
 
-5.4 Order Amount Box Plot
+### 5.3 Correlation Heatmap
 
 ```python
-sns.boxplot(x=data['Order_Amount'])
+sns.heatmap(
+    data[['Rainfall_mm',
+          'Temperature_C',
+          'Humidity_Percent']].corr(),
+    annot=True,
+    cmap='coolwarm'
+)
 
-plt.title('Food Order Amount Box Plot')
-plt.xlabel('Order Amount (Rs)')
+plt.title('Weather Variable Correlation Heatmap')
 
 plt.show()
 ```
 
-**Purpose:** Displays the distribution and spread of order amounts.
+**Purpose:** Displays the correlation between weather variables using a heatmap.
 
-6. Results and Observations
+### 5.4 Daily Rainfall Trend
 
-Summary of Results
+```python
+daily_rainfall.plot(kind='line')
 
-| Analysis | Result |
+plt.title('Daily Rainfall Trend')
+plt.xlabel('Date')
+plt.ylabel('Average Rainfall (mm)')
+
+plt.show()
+```
+
+**Purpose:** Visualises daily average rainfall trends.
+
+### 5.5 Monthly Rainfall Analysis
+
+```python
+monthly_rainfall.plot(kind='bar')
+
+plt.title('Monthly Rainfall Analysis')
+plt.xlabel('Month')
+plt.ylabel('Average Rainfall (mm)')
+
+plt.show()
+```
+
+**Purpose:** Compares average rainfall across different months.
+
+### 5.6 Region-wise Rainfall Comparison
+
+```python
+region_rainfall.plot(kind='bar')
+
+plt.title('Rainfall Comparison by Region')
+plt.xlabel('Region')
+plt.ylabel('Average Rainfall (mm)')
+
+plt.show()
+```
+
+**Purpose:** Compares average rainfall across Salem, Erode, and Coimbatore.
+
+## 6. Results and Observations
+
+### 6.1 Correlation Results
+
+| Variables | Correlation |
 |---|---:|
-| Total Orders | 100 |
-| Average Order Amount | ₹386.81 |
-| Average Delivery Time | 41.07 minutes |
-| Delivered Orders | 76 |
-| Cancelled Orders | 24 |
+| Rainfall and Temperature | -0.065582 |
+| Rainfall and Humidity | 0.210762 |
+| Temperature and Humidity | -0.062446 |
 
-Food Category Results
+### 6.2 Monthly Average Rainfall
 
-| Food Category | Number of Orders |
+| Month | Average Rainfall (mm) |
 |---|---:|
-| Burger | 24 |
-| Desserts | 18 |
-| Biryani | 17 |
-| Chinese | 15 |
-| Pizza | 14 |
-| South Indian | 12 |
+| January | 4.630108 |
+| February | 6.482143 |
+| March | 7.075269 |
+| April | 5.971111 |
+| May | 8.813978 |
+| June | 9.694253 |
 
-Observations
-- Burger is the most frequently ordered food category.
-- South Indian has the lowest number of orders.
-- Average order amount is ₹386.81.
-- Average delivery time is 41.07 minutes.
-- 76 orders were delivered and 24 orders were cancelled.
+### 6.3 Region-wise Average Rainfall
 
-7. How to Run the Project
+| Region | Average Rainfall (mm) |
+|---|---:|
+| Coimbatore | 6.875556 |
+| Erode | 7.496667 |
+| Salem | 6.925556 |
+
+### Observations
+- June has the highest average rainfall among the months analysed.
+- January has the lowest average rainfall.
+- Erode has the highest average rainfall among the three regions.
+- Rainfall has a weak positive correlation with humidity.
+- Rainfall has a very weak negative correlation with temperature.
+
+## 7. How to Run the Project
 
 1. Open Google Colab.
-2. Upload `Food_delivery_analysis.ipynb`.
-3. Upload `food_delivery_data.csv`.
+2. Upload `Rainfall_Analysis.ipynb`.
+3. Upload `rainfall_data.csv`.
 4. Run the notebook cells in sequence.
 5. View the analysis results and charts.
 
-Required Libraries
+### Required Libraries
 
 ```bash
 pip install pandas numpy matplotlib seaborn
 ```
 
-8. Platform Used
+## 8. Platform Used
 Google Colab
 
-9. Conclusion
-This project analyses food delivery data to understand customer ordering patterns, popular food categories, average order amounts, delivery times, and order status using Python and data visualisation.
+## 9. Conclusion
+This project analyses rainfall patterns across Salem, Erode, and Coimbatore. It studies daily and monthly rainfall trends, compares rainfall across regions, and examines the relationship between rainfall, temperature, and humidity using Python-based data analysis and visualisation.
